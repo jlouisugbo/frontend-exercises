@@ -1,1 +1,32 @@
-{"test": true}
+{
+  "_schema": "One entry per exercise, oldest first. Read/write this file whenever you generate or grade an exercise in this repo -- pull latest before reading, push after writing, so the daily generator and any grading session stay in sync.",
+  "_fields": {
+    "date": "MM-DD-YYYY, matches the exercise folder's date prefix",
+    "folder": "exercise folder name",
+    "category": "one of: code-review | debugging | architecture-tradeoffs | typescript-modeling | react-state-performance",
+    "domain_or_topic": "short tag for what the exercise was actually about, e.g. 'pub-sub / effect cleanup', 'discriminated unions', 'memoization' -- used to keep a revisit close to the original rather than just same-category-different-thing",
+    "difficulty": "integer 1-10",
+    "outcome": "pending | struggled | solid | mastered -- 'pending' until Joel submits a solution and gets graded",
+    "notes": "1-2 sentences on what specifically went wrong or well, written at grading time",
+    "revisit": "true if this concept should be brought back in a near-future exercise before it's considered done; false once revisited-and-solid or never needed"
+  },
+  "_generation_rules": [
+    "If the most recent graded entry has outcome 'struggled': do NOT advance difficulty or rotate to a new category. Generate an exercise in the SAME category, touching the SAME or a closely adjacent domain_or_topic, at the same or one point lower difficulty -- a variation, not a repeat, that re-exercises the same underlying concept.",
+    "If any entry has revisit=true and hasn't been revisited yet (no later entry references the same domain_or_topic as a deliberate follow-up), prioritize bringing that concept back within the next 2-3 exercises, even if it means holding off on category rotation for a day.",
+    "If the most recent graded entry has outcome 'solid' or 'mastered': advance normally -- rotate to a category not used in the last 1-2 days, increase difficulty by 0-1 point (cap ~7-8/10, then hold/vary).",
+    "If the most recent entry is still 'pending' (Joel hasn't been graded on it yet), do not lower difficulty; proceed with normal rotation at the same difficulty as that pending entry.",
+    "When generating a revisit exercise, say so honestly in that day's entry's domain_or_topic (e.g. 'effect cleanup -- revisit of 09-21') but do NOT spoil this in the README the way the original exercise didn't spoil its own flaw."
+  ],
+  "log": [
+    {
+      "date": "09-21-2026",
+      "folder": "09-21-2026_NotificationCenter",
+      "category": "react-state-performance",
+      "domain_or_topic": "module-singleton pub-sub with missing effect cleanup",
+      "difficulty": 1,
+      "outcome": "pending",
+      "notes": "",
+      "revisit": false
+    }
+  ]
+}
