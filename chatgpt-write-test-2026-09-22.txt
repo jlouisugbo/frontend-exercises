@@ -1,2 +1,0 @@
-Temporary GitHub write test from ChatGPT.
-Created only to verify repository write and delete access.
