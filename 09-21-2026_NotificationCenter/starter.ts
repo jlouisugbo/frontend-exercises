@@ -6,12 +6,13 @@
 // NOTE: this file intentionally has no JSX. `useNotificationCenter` is a
 // plain hook that any component (toast list, bell icon, badge) can consume.
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
+type notificationType = 'info' | 'success' | 'error' | 'warning';
 export type Notification = {
   id: string;
   message: string;
-  type: string; // 'info' | 'success' | 'error' | 'warning' -- never enforced
+  type: notificationType;
   read: boolean;
   createdAt: number;
 };
@@ -23,7 +24,7 @@ function notifyListeners() {
   listeners.forEach((listener) => listener());
 }
 
-export function addNotification(message: string, type: string) {
+export function addNotification(message: string, type: notificationType) {
   const notification: Notification = {
     id: Math.random().toString(36).slice(2),
     message,
@@ -49,20 +50,21 @@ export function getNotifications(): Notification[] {
   return notifications;
 }
 
+function subscribe(listener: () => void) {
+  listeners.push(listener);
+  return () => {
+    listeners = listeners.filter((l) => l !== listener);
+  }
+}
+
 /**
  * Hook every notification-related component uses to read the current list
  * and re-render when it changes.
  */
 export function useNotificationCenter() {
-  const [, forceRender] = useState(0);
-
-  useEffect(() => {
-    const listener = () => forceRender((n) => n + 1);
-    listeners.push(listener);
-  }, []);
-
+  const notifications = useSyncExternalStore(subscribe, getNotifications)
   return {
-    notifications: getNotifications(),
+    notifications,
     addNotification,
     markAllRead,
     removeNotification,
