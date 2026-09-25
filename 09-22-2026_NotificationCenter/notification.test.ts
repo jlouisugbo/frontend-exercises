@@ -2,18 +2,18 @@ import { describe, expect, it } from "vitest";
 import {
   buildNotificationRows,
   type NotificationRow,
-  type Notification
+  type RawNotification,
 } from "./starter";
 
 // -----------------------------------------------------------------------------
 // This helper is expected to change as you refactor. Update it to match your
 // new boundary and public API. Tests below should retain the same behavior.
 const buildRows = (
-  notifications: Notification[],
+  notifications: RawNotification[],
   nowIso = "2026-09-22T12:00:00.000Z",
 ): NotificationRow[] => buildNotificationRows(notifications, nowIso);
 
-const base = (overrides: Record<string, unknown>): Notification => ({
+const base = (overrides: Partial<RawNotification> = {}): RawNotification => ({
   id: "notification-1",
   kind: "system",
   title: "Scheduled maintenance",
