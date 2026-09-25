@@ -48,10 +48,11 @@
       "difficulty": 1,
       "submission_status": "reviewed",
       "completion_status": "needs_revision",
-      "outcome": "struggled",
-      "notes": "The reviewed branch passes 13 runtime tests, but optional variant fields and a Record<string, unknown> test helper still allow invalid shapes; absent kind and cross-variant fields remain representable. Raw input validation and exhaustive handling are incomplete; expiration at the exact boundary also merits a test.",
+      "outcome": "solid",
+      "notes": "Revised submission passes all 13 tests and strict typechecking. Variant required fields, a parsing step, exhaustive row handling, and the exact expiration boundary are improved. A system notification can still carry conversationId through structural assignment, and raw API input is typed as already-valid base fields; runtime validation of malformed fields remains incomplete.",
       "key_learnings": [
-        "Use variant-specific required fields and validate unknown data before constructing the trusted union."
+        "Narrowing by kind helps, but TypeScript's structural typing allows extra properties on existing variables unless forbidden fields are modeled or checked at the boundary.",
+        "Treat network values as unknown until the required and optional fields have been validated."
       ],
       "revisit": true,
       "submission_branch": "09-22-26-NotificationCenter2",
