@@ -1,38 +1,18 @@
 # Frontend Exercises
 
-A scratch space for repeating frontend exercises. Prompts and scaffolds get written here so you can generate code and practice against them.
-
-Daily frontend engineering practice: one dated exercise folder per day, generated and pushed automatically each morning. Each folder rotates through five categories: code review, debugging, architecture tradeoffs, TypeScript modeling, and React state/performance. Difficulty ramps gradually as the week progresses.
+Daily frontend engineering practice: one dated exercise folder per day. Exercises rotate through code review, debugging, architecture tradeoffs, TypeScript modeling, and React state/performance. Each folder contains its own setup, starter code, and tests.
 
 ## How to use
 
-1. `cd` into the day's folder (`MM-DD-YYYY_ExerciseName/`).
-2. `npm install`
-3. Read the README, then dig into the starter code.
-4. `npm test` -- all tests pass against the starter as given, and should still pass after your changes.
-5. Paste your solution back to Claude (in this task, or any chat with Claude -- just point it at this repo) for corrections + a takeaway.
-6. Reset and repeat until the pattern sticks.
+1. Open a dated folder (`MM-DD-YYYY_ExerciseName/`) and read its README.
+2. Run `npm install`, `npm test`, and `npm run typecheck` from inside that folder.
+3. Work on an exercise branch and share the branch or diff for review.
+4. After review, use the feedback to revise; passing starter tests alone does not establish completion.
 
-## Structure
+## Progress
 
-```
-frontend-exercises/
-  MM-DD-YYYY_ExerciseName/
-    README.md          # the challenge, restrictions, goals, hints
-    starter.ts          # the code to refactor/fix/extend
-    <name>.test.ts       # tests that must keep passing
-```
+[.progress.json](.progress.json) is the compact exercise index. Each `log` entry records a folder, category, topic, difficulty, submission status, completion status, review notes, offered takeaways, and whether a concept should recur. Its `_fields` and `_generation_rules` document the format.
 
-## Adaptive difficulty
+`assigned` means an exercise was published; it does not mean the learner started it. `reviewed` means an attempt was evaluated; `needs_revision` remains until the exercise acceptance criteria are met. Review notes describe evidence from the submitted branch, and key learnings are suggested takeaways rather than proof of mastery.
 
-`.progress.json` at the repo root tracks how each exercise went and drives what comes next -- it's the memory that lets a fresh session (the daily generator, or whatever session grades your solution) pick up where the last one left off. Its own `_fields` and `_generation_rules` keys document the schema and the rules in full; the short version:
-
-* Struggled on the last one -> the next exercise stays in the same category and close to the same underlying concept, at the same or slightly lower difficulty, instead of moving on.
-* Something's flagged `revisit: true` -> it gets brought back within the next couple of exercises before being considered done.
-* Solid or mastered -> normal rotation resumes, difficulty ticks up slightly.
-
-Whoever grades a solution (reviews it and gives feedback) is responsible for pulling latest, updating that day's entry in `.progress.json` (`outcome`, `notes`, `revisit`), and pushing -- that's what the next day's generation run reads.
-
-## Automation
-
-`.github/workflows/daily-exercise.yml` runs every morning (and can be triggered manually from the Actions tab) to generate the next exercise and commit it here automatically, using the adaptive rules above.
+The daily generator reads this file first to choose the next category and level, inspects recent exercises when needed, and appends an assigned entry after a successful push. A solution review updates its entry after verifying the branch and tests. The exercise source and submitted branch remain the source of truth for code details.
