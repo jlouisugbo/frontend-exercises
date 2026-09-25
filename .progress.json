@@ -83,6 +83,19 @@
       "notes": "",
       "key_learnings": [],
       "revisit": false
+    },
+    {
+      "date": "09-25-2026",
+      "folder": "09-25-2026_WorkOrderQueue",
+      "category": "architecture-tradeoffs",
+      "domain_or_topic": "shared work-order queue policy and untrusted-input boundary; gentle revisit of 09-22",
+      "difficulty": 1,
+      "submission_status": "assigned",
+      "completion_status": "not_submitted",
+      "outcome": "pending",
+      "notes": "",
+      "key_learnings": [],
+      "revisit": false
     }
   ]
 }
