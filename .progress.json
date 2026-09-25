@@ -1,31 +1,86 @@
 {
-  "_schema": "One entry per exercise, oldest first. Read/write this file whenever you generate or grade an exercise in this repo -- pull latest before reading, push after writing, so the daily generator and any grading session stay in sync.",
+  "_schema": "One current record per exercise, oldest first. Read this index before generating or reviewing; update after publishing an exercise or reviewing a submission. The latest GitHub branch/README/source remains authoritative when validating details.",
   "_fields": {
-    "date": "MM-DD-YYYY, matches the exercise folder's date prefix",
-    "folder": "exercise folder name",
-    "category": "one of: code-review | debugging | architecture-tradeoffs | typescript-modeling | react-state-performance",
-    "domain_or_topic": "short tag for what the exercise was actually about, e.g. 'pub-sub / effect cleanup', 'discriminated unions', 'memoization' -- used to keep a revisit close to the original rather than just same-category-different-thing",
-    "difficulty": "integer 1-10",
-    "outcome": "pending | struggled | solid | mastered -- 'pending' until Joel submits a solution and gets graded",
-    "notes": "1-2 sentences on what specifically went wrong or well, written at grading time",
-    "revisit": "true if this concept should be brought back in a near-future exercise before it's considered done; false once revisited-and-solid or never needed"
+    "date": "MM-DD-YYYY, exercise folder date",
+    "folder": "Exact dated exercise folder; branch may differ from main",
+    "category": "code-review | debugging | architecture-tradeoffs | typescript-modeling | react-state-performance",
+    "domain_or_topic": "Brief topic for rotation and targeted revisits",
+    "difficulty": "Integer 1-5, matching the exercise README (convert older scales explicitly)",
+    "submission_status": "assigned | reviewed; reviewed means an attempt was evaluated, not necessarily accepted",
+    "completion_status": "not_submitted | needs_revision | completed; only mark completed when acceptance criteria are met",
+    "outcome": "pending | struggled | solid | mastered; diagnostic review label, independent of completion",
+    "notes": "Concrete review findings, not assumed knowledge",
+    "key_learnings": "Review takeaways offered to the learner; do not claim mastery without evidence",
+    "revisit": "Whether a follow-up should address this concept",
+    "submission_branch": "The reviewed branch name, if known",
+    "reviewed_on": "YYYY-MM-DD when review occurred, if known"
   },
   "_generation_rules": [
-    "If the most recent graded entry has outcome 'struggled': do NOT advance difficulty or rotate to a new category. Generate an exercise in the SAME category, touching the SAME or a closely adjacent domain_or_topic, at the same or one point lower difficulty -- a variation, not a repeat, that re-exercises the same underlying concept.",
-    "If any entry has revisit=true and hasn't been revisited yet (no later entry references the same domain_or_topic as a deliberate follow-up), prioritize bringing that concept back within the next 2-3 exercises, even if it means holding off on category rotation for a day.",
-    "If the most recent graded entry has outcome 'solid' or 'mastered': advance normally -- rotate to a category not used in the last 1-2 days, increase difficulty by 0-1 point (cap ~7-8/10, then hold/vary).",
-    "If the most recent entry is still 'pending' (Joel hasn't been graded on it yet), do not lower difficulty; proceed with normal rotation at the same difficulty as that pending entry.",
-    "When generating a revisit exercise, say so honestly in that day's entry's domain_or_topic (e.g. 'effect cleanup -- revisit of 09-21') but do NOT spoil this in the README the way the original exercise didn't spoil its own flaw."
+    "Read this index first, then inspect the recent README/source/tests or reviewed branch as needed to verify details. Do not treat the ledger as a substitute for checking code when grading.",
+    "When a new dated folder is successfully pushed, append one assigned record with pending outcome and not_submitted completion_status. Never infer submission or completion merely from elapsed time.",
+    "When reviewing a submitted branch, update its record with review findings, one or two takeaways to practice, branch, review date, and completion_status. Only use completed after verified acceptance criteria; otherwise use needs_revision.",
+    "Rotate across code review, debugging, architecture tradeoffs, TypeScript modeling, and React state/performance; avoid the last two categories when practical. Work a revisit of a flagged concept into an upcoming exercise without automatically repeating the category every time.",
+    "Hold difficulty near 1/5 initially; raise gradually after multiple demonstrated solid or mastered reviews. Pending submissions alone do not prove readiness to increase difficulty."
   ],
   "log": [
     {
       "date": "09-21-2026",
       "folder": "09-21-2026_NotificationCenter",
       "category": "react-state-performance",
-      "domain_or_topic": "module-singleton pub-sub with missing effect cleanup",
+      "domain_or_topic": "notification external store and component lifecycle",
       "difficulty": 1,
+      "submission_status": "reviewed",
+      "completion_status": "needs_revision",
+      "outcome": "struggled",
+      "notes": "The reviewed branch passes the original 11 tests and improves subscription cleanup, but addNotification mutates the snapshot array with push; useSyncExternalStore may not notify React because the snapshot identity stays the same. A render regression test exposed this.",
+      "key_learnings": [
+        "External-store updates must publish a new snapshot identity for useSyncExternalStore consumers."
+      ],
+      "revisit": true,
+      "submission_branch": "09-21-26-NotificationCenter1",
+      "reviewed_on": "2026-09-25"
+    },
+    {
+      "date": "09-22-2026",
+      "folder": "09-22-2026_NotificationCenter",
+      "category": "typescript-modeling",
+      "domain_or_topic": "notification variants and untrusted input boundary",
+      "difficulty": 1,
+      "submission_status": "reviewed",
+      "completion_status": "needs_revision",
+      "outcome": "struggled",
+      "notes": "The reviewed branch passes 13 runtime tests, but optional variant fields and a Record<string, unknown> test helper still allow invalid shapes; absent kind and cross-variant fields remain representable. Raw input validation and exhaustive handling are incomplete; expiration at the exact boundary also merits a test.",
+      "key_learnings": [
+        "Use variant-specific required fields and validate unknown data before constructing the trusted union."
+      ],
+      "revisit": true,
+      "submission_branch": "09-22-26-NotificationCenter2",
+      "reviewed_on": "2026-09-25"
+    },
+    {
+      "date": "09-23-2026",
+      "folder": "09-23-2026_IncidentQueue",
+      "category": "react-state-performance",
+      "domain_or_topic": "derived React state and render consistency",
+      "difficulty": 1,
+      "submission_status": "assigned",
+      "completion_status": "not_submitted",
       "outcome": "pending",
       "notes": "",
+      "key_learnings": [],
+      "revisit": false
+    },
+    {
+      "date": "09-24-2026",
+      "folder": "09-24-2026_AutosaveDraftReview",
+      "category": "code-review",
+      "domain_or_topic": "autosave async ordering and component lifecycle",
+      "difficulty": 1,
+      "submission_status": "assigned",
+      "completion_status": "not_submitted",
+      "outcome": "pending",
+      "notes": "",
+      "key_learnings": [],
       "revisit": false
     }
   ]
