@@ -96,6 +96,19 @@
       "notes": "",
       "key_learnings": [],
       "revisit": false
+    },
+    {
+      "date": "09-26-2026",
+      "folder": "09-26-2026_CommandMenuShortcut",
+      "category": "debugging",
+      "domain_or_topic": "React document shortcut lifecycle and current props; lifecycle revisit of 09-21",
+      "difficulty": 1,
+      "submission_status": "assigned",
+      "completion_status": "not_submitted",
+      "outcome": "pending",
+      "notes": "",
+      "key_learnings": [],
+      "revisit": false
     }
   ]
 }
