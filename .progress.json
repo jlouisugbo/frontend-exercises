@@ -109,6 +109,19 @@
       "notes": "",
       "key_learnings": [],
       "revisit": false
+    },
+    {
+      "date": "09-27-2026",
+      "folder": "09-27-2026_PreferenceChanges",
+      "category": "typescript-modeling",
+      "domain_or_topic": "key-dependent preference values, typed batches, and untrusted storage boundary; revisit of 09-22",
+      "difficulty": 1,
+      "submission_status": "assigned",
+      "completion_status": "not_submitted",
+      "outcome": "pending",
+      "notes": "",
+      "key_learnings": [],
+      "revisit": false
     }
   ]
 }
