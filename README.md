@@ -1,18 +1,22 @@
 # Frontend Exercises
 
-Daily frontend engineering practice: one dated exercise folder per day. Exercises rotate through code review, debugging, architecture tradeoffs, TypeScript modeling, and React state/performance. Each folder contains its own setup, starter code, and tests.
+Daily React/TypeScript practice, generated automatically every morning and pushed here as a new dated folder.
 
-## How to use
+## Format
 
-1. Open a dated folder (`MM-DD-YYYY_ExerciseName/`) and read its README.
-2. Run `npm install`, `npm test`, and `npm run typecheck` from inside that folder.
-3. Work on an exercise branch and share the branch or diff for review.
-4. After review, use the feedback to revise; passing starter tests alone does not establish completion.
+Each day lives in its own folder at the repo root: `MM-DD-YYYY_ExerciseName/`
 
-## Progress
+- **README.md** — the challenge, what's wrong with the code, the goal, and hints if you get stuck. It never names the underlying pattern or code smell outright — that's for you to find.
+- **starter.ts** or **starter.tsx** — working code with a deliberate design problem embedded in it, written to look like real code rather than a toy example.
+- **A test file** (`*.test.ts` / `*.test.tsx`) — tests that pass against the starter as-is, and that stay stable as you refactor. Construction and any compound return values are funneled through a small helper (a "seam") near the top of the file, so a refactor that changes the public API only requires updating that helper, not every test.
+- Supporting config (`package.json`, `tsconfig.json`, `vitest.config.ts`, etc.) so the exercise runs standalone.
 
-[.progress.json](.progress.json) is the compact exercise index. Each `log` entry records a folder, category, topic, difficulty, submission status, completion status, review notes, offered takeaways, and whether a concept should recur. Its `_fields` and `_generation_rules` document the format.
+Exercises rotate across five categories: code review, debugging, architecture tradeoffs, TypeScript modeling, and React state/performance. Difficulty increases gradually over time, and adapts if a recent exercise was a struggle — it'll stay close to the same topic/difficulty rather than advancing, so it can be mastered before moving on.
 
-`assigned` means an exercise was published; it does not mean the learner started it. `reviewed` means an attempt was evaluated; `needs_revision` remains until the exercise acceptance criteria are met. Review notes describe evidence from the submitted branch, and key learnings are suggested takeaways rather than proof of mastery.
+## AI
 
-The daily generator reads this file first to choose the next category and level, inspects recent exercises when needed, and appends an assigned entry after a successful push. A solution review updates its entry after verifying the branch and tests. The exercise source and submitted branch remain the source of truth for code details.
+There's no rule against using AI on these, but consider this a friendly guideline. The goal is to strengthen your own problem-solving muscles, and the best way to do that is by wrestling with the code yourself first. AI is great for comparing approaches or getting a second opinion once you've made your own attempt — but if you start with AI, you skip the practice that builds the instincts you rely on day to day.
+
+## Running an exercise
+
+Each dated folder is standalone. `cd` into it, install dependencies, and run the test file per the instructions in that folder's own README.
