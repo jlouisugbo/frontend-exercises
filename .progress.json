@@ -122,6 +122,19 @@
       "notes": "",
       "key_learnings": [],
       "revisit": false
+    },
+    {
+      "date": "09-28-2026",
+      "folder": "09-28-2026_ReportExportPanel",
+      "category": "react-state-performance",
+      "domain_or_topic": "coherent async request phases and explicit UI transitions",
+      "difficulty": 1,
+      "submission_status": "assigned",
+      "completion_status": "not_submitted",
+      "outcome": "pending",
+      "notes": "",
+      "key_learnings": [],
+      "revisit": false
     }
   ]
 }
