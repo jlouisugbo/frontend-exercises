@@ -1,0 +1,13 @@
+{
+  "difficulty": 2,
+  "history": [
+    {
+      "date": "2026-09-29",
+      "folder": "09-29-2026_ShipmentPricingRefactor",
+      "category": "code-review",
+      "domain": "logistics",
+      "difficulty": 1,
+      "smell": "Same carrier-type conditional chain duplicated across three functions (Strategy-shaped gap); primitive obsession on a raw carrier string instead of a literal union; boolean-parameter trap on isExpress/isFragile; magic-number rate literals scattered per branch."
+    }
+  ]
+}
