@@ -1,5 +1,5 @@
 {
-  "difficulty": 2,
+  "difficulty": 3,
   "history": [
     {
       "date": "2026-09-29",
@@ -8,6 +8,14 @@
       "domain": "logistics",
       "difficulty": 1,
       "smell": "Same carrier-type conditional chain duplicated across three functions (Strategy-shaped gap); primitive obsession on a raw carrier string instead of a literal union; boolean-parameter trap on isExpress/isFragile; magic-number rate literals scattered per branch."
+    },
+    {
+      "date": "2026-09-30",
+      "folder": "09-30-2026_PatientVitalsMonitor",
+      "category": "debugging",
+      "domain": "healthcare",
+      "difficulty": 2,
+      "bug": "useEffect fetching vitals on patientId change has no guard against out-of-order responses (no cleanup/ignore flag or request-identity check), so a stale fetch for a previously selected patient can resolve after a newer one and silently overwrite the currently displayed patient's vitals - an async race condition that only shows up when requests resolve out of order."
     }
   ]
 }
