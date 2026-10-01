@@ -3,7 +3,7 @@
 
 export interface ShipmentOrder {
   id: string;
-  carrier: string; // e.g. 'ups', 'fedex', 'usps', 'dhl'
+  carrier: keyof typeof carriers; // e.g. 'ups', 'fedex', 'usps', 'dhl'
   weightKg: number;
   destinationCountry: string; // ISO country code, e.g. 'US'
 }
@@ -82,6 +82,9 @@ export function calculateShippingCost(
   let base = 0;
   const carrier = carriers[order.carrier] ?? carriers.fallback;
   base = carrier.base + order.weightKg * carrier.weightMult
+  if (order.weightKg > 20) {
+    base *= 1.5
+  }
   if (order.destinationCountry !== HOME_COUNTRY) {
     base += carrier.notHomeCountry;
   }
