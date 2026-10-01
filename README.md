@@ -1,6 +1,8 @@
 # Frontend Exercises
 
-Daily React/TypeScript practice, generated automatically every morning and pushed here as a new dated folder.
+Daily React/TypeScript practice, generated automatically every weekday morning and pushed here as a new dated folder.
+
+The full generation rules (category rotation, difficulty progression, file layout, README template) live in [`EXERCISE_SPEC.md`](./EXERCISE_SPEC.md) — edit that file to change how exercises are generated; the scheduled task reads it fresh every run. Progress and adaptive difficulty state live in [`progress.jsonl`](./progress.jsonl), one JSON line per exercise.
 
 ## Format
 
@@ -11,7 +13,11 @@ Each day lives in its own folder at the repo root: `MM-DD-YYYY_ExerciseName/`
 - **A test file** (`*.test.ts` / `*.test.tsx`) — tests that pass against the starter as-is, and that stay stable as you refactor. Construction and any compound return values are funneled through a small helper (a "seam") near the top of the file, so a refactor that changes the public API only requires updating that helper, not every test.
 - Supporting config (`package.json`, `tsconfig.json`, `vitest.config.ts`, etc.) so the exercise runs standalone.
 
-Exercises rotate across five categories: code review, debugging, architecture tradeoffs, TypeScript modeling, and React state/performance. Difficulty increases gradually over time, and adapts if a recent exercise was a struggle — it'll stay close to the same topic/difficulty rather than advancing, so it can be mastered before moving on.
+Exercises rotate across five categories: code review, debugging, architecture tradeoffs, TypeScript modeling, and React state/performance. Difficulty increases gradually over time, and adapts if a recent exercise was a struggle — it'll stay close to the same topic/difficulty rather than advancing, so it can be mastered before moving on. See `EXERCISE_SPEC.md` for the exact rules.
+
+## When you're ready for a review
+
+Each exercise's own README ends with a prompt to bring your attempt back to Claude once you're done (or stuck). Any Claude session can do this — it'll read that exercise's README, your code, and `progress.jsonl`, walk through your approach and an alternative, and update `progress.jsonl` with how it went so the next generated exercise adapts accordingly.
 
 ## AI
 
