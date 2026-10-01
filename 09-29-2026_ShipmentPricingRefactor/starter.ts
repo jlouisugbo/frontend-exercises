@@ -8,6 +8,70 @@ export interface ShipmentOrder {
   destinationCountry: string; // ISO country code, e.g. 'US'
 }
 
+type Carrier = {
+  base: number
+  weightMult: number;
+  notHomeCountry: number;
+  expressMult: number;
+  fragileAdd: number;
+  intlDays: number;
+  domesticDays: number;
+  label: string;
+}
+
+const carriers: Record<string, Carrier> = {
+  'ups': {
+    base: 5,
+    weightMult: 1.2,
+    notHomeCountry: 15,
+    expressMult: 1.75,
+    fragileAdd: 4,
+    intlDays: 7,
+    domesticDays: 3,
+    label: "UPS",
+  }, 
+  'fedex': {
+    base: 6,
+    weightMult: 1.1,
+    notHomeCountry: 18,
+    expressMult: 1.6,
+    fragileAdd: 3.5,
+    intlDays: 6,
+    domesticDays: 2,
+    label: "FedEx"
+  },
+  'usps': {
+    base: 4,
+    weightMult: 0.9,
+    notHomeCountry: 22,
+    expressMult: 2.0,
+    fragileAdd: 2,
+    intlDays: 10,
+    domesticDays: 4,
+    label: "USPS",
+  },
+  'dhl': {
+    base: 7,
+    weightMult: 1.3,
+    notHomeCountry: 10,
+    expressMult: 1.5,
+    fragileAdd: 5,
+    intlDays: 5,
+    domesticDays: 3,
+    label: "DHL Express"
+  },
+  fallback: {
+    base: 10,
+    weightMult: 1.5,
+    notHomeCountry: 20,
+    expressMult: 1.5,
+    fragileAdd: 5,
+    intlDays: 12,
+    domesticDays: 5,
+    label: "Unknown Carrier"
+  }
+}
+
 const HOME_COUNTRY = 'US';
 
 export function calculateShippingCost(
@@ -16,98 +80,30 @@ export function calculateShippingCost(
   isFragile: boolean
 ): number {
   let base = 0;
-
-  if (order.carrier === 'ups') {
-    base = 5 + order.weightKg * 1.2;
-    if (order.destinationCountry !== HOME_COUNTRY) {
-      base += 15;
-    }
-    if (isExpress) {
-      base *= 1.75;
-    }
-    if (isFragile) {
-      base += 4;
-    }
-  } else if (order.carrier === 'fedex') {
-    base = 6 + order.weightKg * 1.1;
-    if (order.destinationCountry !== HOME_COUNTRY) {
-      base += 18;
-    }
-    if (isExpress) {
-      base *= 1.6;
-    }
-    if (isFragile) {
-      base += 3.5;
-    }
-  } else if (order.carrier === 'usps') {
-    base = 4 + order.weightKg * 0.9;
-    if (order.destinationCountry !== HOME_COUNTRY) {
-      base += 22;
-    }
-    if (isExpress) {
-      base *= 2.0;
-    }
-    if (isFragile) {
-      base += 2;
-    }
-  } else if (order.carrier === 'dhl') {
-    base = 7 + order.weightKg * 1.3;
-    if (order.destinationCountry !== HOME_COUNTRY) {
-      base += 10;
-    }
-    if (isExpress) {
-      base *= 1.5;
-    }
-    if (isFragile) {
-      base += 5;
-    }
-  } else {
-    // Unknown carrier code - flat fallback rate. Also what a typo'd
-    // carrier string silently falls into.
-    base = 10 + order.weightKg * 1.5;
-    if (order.destinationCountry !== HOME_COUNTRY) {
-      base += 20;
-    }
-    if (isExpress) {
-      base *= 1.5;
-    }
-    if (isFragile) {
-      base += 5;
-    }
+  const carrier = carriers[order.carrier] ?? carriers.fallback;
+  base = carrier.base + order.weightKg * carrier.weightMult
+  if (order.destinationCountry !== HOME_COUNTRY) {
+    base += carrier.notHomeCountry;
   }
-
+  if (isExpress) {
+    base *= carrier.expressMult;
+  }
+  if (isFragile) {
+    base += carrier.fragileAdd;
+  }
   return Math.round(base * 100) / 100;
 }
 
 export function getEstimatedDeliveryDays(order: ShipmentOrder, isExpress: boolean): number {
   let days: number;
-
-  if (order.carrier === 'ups') {
-    days = order.destinationCountry !== HOME_COUNTRY ? 7 : 3;
-    if (isExpress) days = Math.ceil(days / 2);
-  } else if (order.carrier === 'fedex') {
-    days = order.destinationCountry !== HOME_COUNTRY ? 6 : 2;
-    if (isExpress) days = Math.ceil(days / 2);
-  } else if (order.carrier === 'usps') {
-    days = order.destinationCountry !== HOME_COUNTRY ? 10 : 4;
-    if (isExpress) days = Math.ceil(days / 2);
-  } else if (order.carrier === 'dhl') {
-    days = order.destinationCountry !== HOME_COUNTRY ? 5 : 3;
-    if (isExpress) days = Math.ceil(days / 2);
-  } else {
-    days = order.destinationCountry !== HOME_COUNTRY ? 12 : 5;
-    if (isExpress) days = Math.ceil(days / 2);
-  }
-
+  const carrier = carriers[order.carrier] ?? carriers.fallback
+  days = order.destinationCountry !== HOME_COUNTRY ? carrier.intlDays : carrier.domesticDays
+  if (isExpress) days = Math.ceil(days / 2);
   return days;
 }
 
 export function getCarrierDisplayName(order: ShipmentOrder): string {
-  if (order.carrier === 'ups') return 'UPS';
-  if (order.carrier === 'fedex') return 'FedEx';
-  if (order.carrier === 'usps') return 'USPS';
-  if (order.carrier === 'dhl') return 'DHL Express';
-  return 'Unknown Carrier';
+  return (carriers[order.carrier] ?? carriers.fallback).label
 }
 
 // Used by the shipment summary card to build a one-line label.
