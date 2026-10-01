@@ -83,7 +83,7 @@ export function calculateShippingCost(
   const carrier = carriers[order.carrier] ?? carriers.fallback;
   base = carrier.base + order.weightKg * carrier.weightMult
   if (order.weightKg > 20) {
-    base *= 1.5
+    base *= 1.5 
   }
   if (order.destinationCountry !== HOME_COUNTRY) {
     base += carrier.notHomeCountry;
