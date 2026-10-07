@@ -36,19 +36,20 @@ export function PatientVitalsPanel({
   useEffect(() => {
     setIsLoading(true);
     setError(null);
-
+    const abort = new AbortController() 
     fetchVitals(patientId)
       .then((reading) => {
         setVitals(reading);
-        setIsLoading(false);
       })
       .catch((err: unknown) => {
         const message = err instanceof Error ? err.message : 'Unknown error';
         setError(message);
-        setIsLoading(false);
-      });
+      }).finally(() => setIsLoading(false))
     // Re-fetch whenever the queue selection changes.
-  }, [patientId, fetchVitals]);
+    return () => {
+      abort.abort()
+    }
+  }, [patientId]);
 
   if (error) {
     return (
