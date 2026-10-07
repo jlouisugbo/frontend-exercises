@@ -7,6 +7,7 @@ export interface QueuedPlayer {
   playerId: string;
   skillRating: number;
   joinedAt: number; // epoch ms
+  partyId?: number;
 }
 
 export class MatchmakingQueue {
@@ -14,19 +15,15 @@ export class MatchmakingQueue {
 
   // Exposed directly so the VIP tool (and anything else) can reach in and
   // adjust position without going through enqueue/dequeue.
-  players: QueuedPlayer[] = [];
+  private players: QueuedPlayer[] = [];
 
   constructor(maxSize: number) {
     this.maxSize = maxSize;
   }
 
   enqueue(player: QueuedPlayer): boolean {
-    if (this.players.length >= this.maxSize) {
-      return false;
-    }
-    if (this.players.some((p) => p.playerId === player.playerId)) {
-      return false;
-    }
+    if(!this.spaceToAddPlayer()) return false
+    if(this.playerInQueue(player) !== -1) return false
     this.players.push(player);
     return true;
   }
@@ -38,10 +35,41 @@ export class MatchmakingQueue {
   get size(): number {
     return this.players.length;
   }
+
+  get remainingSize(): number { 
+    return this.maxSize - this.players.length
+  }
+
+  private spaceToAddPlayer(): boolean {
+    if (this.players.length >= this.maxSize) return false
+    return true
+  }
+
+  private playerInQueue(player: QueuedPlayer): number { 
+    const index = this.players.findIndex(p => p.playerId === player.playerId) 
+    return index 
+  }
+
+  boostToFront(player: QueuedPlayer): boolean {
+    let index = this.playerInQueue(player)
+    if (index !== -1) {
+      const [existingPlayer] = this.players.splice(index, 1)
+      this.players.unshift(existingPlayer)
+    } else {
+      if(!this.spaceToAddPlayer()) return false
+      this.players.unshift(player)
+    }
+    return true
+  }
 }
 
-// Support's VIP tool: put a player at the very front of the line so they
-// get matched on the next tick, skipping the wait.
 export function boostToFront(queue: MatchmakingQueue, player: QueuedPlayer): void {
-  queue.players.unshift(player);
+  queue.boostToFront(player)
+}
+
+export function queueParty(queue: MatchmakingQueue, party: QueuedPlayer[]): void {
+  if (queue.remainingSize < party.length) return 
+  for (const player of party) { 
+    queue.enqueue(player)
+  }
 }
