@@ -12,8 +12,8 @@ type BasePayrollEvent = {
   effectiveDate: string; // ISO date
 }
 export type PayrollEvent = BasePayrollEvent & (
-  | { type: "hire"; startingSalaryCents?: number }
-  | { type: "termination"; severanceCents?: number }
+  | { type: "hire"; startingSalaryCents: number }
+  | { type: "termination"; severanceCents: number }
   | { type: "bonus"; bonusAmountCents: number; bonusReason: string }
   | { type: "correction"; correctedFieldName: string; correctedValueCents: number }
   | { type: "rehire"; hrCompletions: number; newStartingSalary: number; }
@@ -39,7 +39,7 @@ export function toLineItem(event: PayrollEvent): PayrollLineItem {
   }
 }
 
-const handleHire = (event: Extract<PayrollEvent, {type: "hire"}>) => {
+const handleHire = (event: Extract<PayrollEvent, {type: "hire"}>): PayrollLineItem => {
   return {
     employeeId: event.employeeId,
     description: `Starting salary as of ${event.effectiveDate}`,
@@ -47,7 +47,7 @@ const handleHire = (event: Extract<PayrollEvent, {type: "hire"}>) => {
   }; 
 }
 
-const handleTermination = (event: Extract<PayrollEvent, {type: "termination"}>) => {
+const handleTermination = (event: Extract<PayrollEvent, {type: "termination"}>): PayrollLineItem => {
   return {
     employeeId: event.employeeId,
     description: `Final pay and severance as of ${event.effectiveDate}`,
@@ -55,7 +55,7 @@ const handleTermination = (event: Extract<PayrollEvent, {type: "termination"}>) 
   }; 
 }
 
-const handleBonus = (event: Extract<PayrollEvent, {type: "bonus"}>) => {
+const handleBonus = (event: Extract<PayrollEvent, {type: "bonus"}>): PayrollLineItem => {
   return {
     employeeId: event.employeeId,
     description: event.bonusReason ?? 'Bonus',
@@ -63,7 +63,7 @@ const handleBonus = (event: Extract<PayrollEvent, {type: "bonus"}>) => {
   };
 }
 
-const handleCorrection = (event: Extract<PayrollEvent, {type: "correction"}>) => {
+const handleCorrection = (event: Extract<PayrollEvent, {type: "correction"}>): PayrollLineItem => {
   return {
     employeeId: event.employeeId,
     description: `Correction: ${event.correctedFieldName ?? 'unspecified field'}`,
@@ -71,10 +71,10 @@ const handleCorrection = (event: Extract<PayrollEvent, {type: "correction"}>) =>
   };
 }
 
-const handleRehire = (event: Extract<PayrollEvent, {type: "rehire"}>) => {
+const handleRehire = (event: Extract<PayrollEvent, {type: "rehire"}>): PayrollLineItem => {
   return {
     employeeId: event.employeeId,
     description: `New starting salary as of ${event.effectiveDate}, HR trainings completed ${event.hrCompletions}`,
-    amountCents: event.newStartingSalary
+    amountCents: event.newStartingSalary ?? 0
   }; 
 }
