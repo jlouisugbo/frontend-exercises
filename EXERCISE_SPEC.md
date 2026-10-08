@@ -41,7 +41,7 @@ Vary the **domain** each time, independent of category (e-commerce, healthcare, 
 
 Each exercise is a dated directory at the repo root: `MM-DD-YYYY_ExerciseName/` (PascalCase-ish exercise name), containing:
 
-- **starter.ts** or **starter.tsx** (`.tsx` if the exercise involves real React components/JSX) — the flawed starter code.
+- **the name of the file based on the exercise** (`.tsx` if the exercise involves real React components/JSX) — the flawed starter code.
 - **A test file** (`*.test.ts` / `*.test.tsx`, named for the exercise) using vitest (and React Testing Library + jsdom for component exercises) — see rules below.
 - **README.md** — see template below.
 - Minimal standalone config: `package.json`, `tsconfig.json`, `vitest.config.ts` (plus `vitest.setup.ts` if RTL/jsdom is needed). Model these on the most recent prior exercise's config files; otherwise use sensible minimal defaults.

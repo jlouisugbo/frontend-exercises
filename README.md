@@ -2,14 +2,14 @@
 
 Daily React/TypeScript practice, generated automatically every weekday morning and pushed here as a new dated folder.
 
-The full generation rules (category rotation, difficulty progression, file layout, README template) live in [`EXERCISE_SPEC.md`](./EXERCISE_SPEC.md) — edit that file to change how exercises are generated; the scheduled task reads it fresh every run. Progress and adaptive difficulty state live in [`progress.jsonl`](./progress.jsonl), one JSON line per exercise.
+The full generation rules (category rotation, difficulty progression, file layout, README template) live in `[EXERCISE_SPEC.md](./EXERCISE_SPEC.md)` — edit that file to change how exercises are generated; the scheduled task reads it fresh every run. Progress and adaptive difficulty state live in `[progress.jsonl](./progress.jsonl)`, one JSON line per exercise.
 
 ## Format
 
 Each day lives in its own folder at the repo root: `MM-DD-YYYY_ExerciseName/`
 
 - **README.md** — the challenge, what's wrong with the code, the goal, and hints if you get stuck. It never names the underlying pattern or code smell outright — that's for you to find.
-- **starter.ts** or **starter.tsx** — working code with a deliberate design problem embedded in it, written to look like real code rather than a toy example.
+- **the name of the exercise** — working code with a deliberate design problem embedded in it, written to look like real code rather than a toy example.
 - **A test file** (`*.test.ts` / `*.test.tsx`) — tests that pass against the starter as-is, and that stay stable as you refactor. Construction and any compound return values are funneled through a small helper (a "seam") near the top of the file, so a refactor that changes the public API only requires updating that helper, not every test.
 - Supporting config (`package.json`, `tsconfig.json`, `vitest.config.ts`, etc.) so the exercise runs standalone.
 
