@@ -61,7 +61,7 @@ export function ProductGrid({ products, onAddToCart, onCardRender }: ProductGrid
             <ProductCard
               key={product.id}
               product={product}
-              onAddToCart={(id) => onAddToCart(id)}
+              onAddToCart={onAddToCart}
               onRender={onCardRender}
             />
           ))}
