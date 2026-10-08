@@ -13,21 +13,19 @@ export interface RosterPlayer {
 }
 
 export function canAddToLineup(player: RosterPlayer, slot: RosterSlot): boolean {
+  return handleSlotRestriction(player,slot)
+}
+
+export function canCompleteTrade(incomingPlayer: RosterPlayer, destinationSlot: RosterSlot): boolean {
+  return handleSlotRestriction(incomingPlayer, destinationSlot)
+}
+
+const handleSlotRestriction = (player: RosterPlayer, slot: RosterSlot) => {
   if (player.status === 'suspended') {
     return false;
   }
   if (player.status === 'injured_reserve' && slot !== 'ir_slot') {
     return false;
   }
-  return true;
-}
-
-export function canCompleteTrade(incomingPlayer: RosterPlayer, destinationSlot: RosterSlot): boolean {
-  if (incomingPlayer.status === 'suspended') {
-    return false;
-  }
-  // Historically trades only ever moved players onto the bench, and IR
-  // players couldn't be traded at all, so there was never a reason to
-  // check destinationSlot here.
-  return true;
+  return true
 }
