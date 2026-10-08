@@ -36,7 +36,7 @@ export interface UpgradeResult {
   newFareClass: FareClass | null;
   reason: string;
 }
-
+const auditedUpgrades: (UpgradeResult & Passenger)[] = [];
 /**
  * Checks whether `passenger` can be upgraded to the next fare class up on
  * `flight`, and - if so - upgrades them.
@@ -56,7 +56,9 @@ function takeSeat(flight: Flight, passenger: Passenger, fareClass: FareClass): U
   passenger.currentFareClass = fareClass;
   passenger.upgradesUsedThisTrip += 1;
 
-  return upgradeResult(true, fareClass, "Upgrade applied.");
+  const upgradedResult: UpgradeResult = upgradeResult(true, fareClass, "Upgrade applied.");
+  auditedUpgrades.push({...upgradedResult, ...passenger})
+  return upgradedResult
 }
 
 function evaluateAvailability(flight: Flight, passenger: Passenger): UpgradeResult {
