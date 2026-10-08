@@ -44,52 +44,60 @@ export interface UpgradeResult {
  * Wired directly to the "Upgrade My Seat" button in the booking app.
  */
 export function evaluateUpgrade(flight: Flight, passenger: Passenger): UpgradeResult {
-  const currentIndex = FARE_ORDER.indexOf(passenger.currentFareClass);
+  const available = evaluateAvailability(flight, passenger)
+  if (!available.eligible) return available;
 
+  // Everything checks out - take the seat.
+  return takeSeat(flight, passenger, available.newFareClass!)
+}
+
+function takeSeat(flight: Flight, passenger: Passenger, fareClass: FareClass): UpgradeResult {
+  flight.seatsAvailable[fareClass] -= 1;
+  passenger.currentFareClass = fareClass;
+  passenger.upgradesUsedThisTrip += 1;
+
+  return upgradeResult(true, fareClass, "Upgrade applied.");
+}
+
+function evaluateAvailability(flight: Flight, passenger: Passenger): UpgradeResult {
+  const currentIndex = FARE_ORDER.indexOf(passenger.currentFareClass);
   if (currentIndex === FARE_ORDER.length - 1) {
-    return {
-      eligible: false,
-      newFareClass: null,
-      reason: "Already in the top fare class.",
-    };
+    return upgradeResult(false, null, "Already in the top fare class");
   }
 
   const maxSteps = TIER_MAX_UPGRADE_STEPS[passenger.loyaltyTier];
   if (maxSteps === 0) {
-    return {
-      eligible: false,
-      newFareClass: null,
-      reason: "Loyalty tier does not qualify for upgrades.",
-    };
+    return upgradeResult(
+      false,
+      null,
+      "Upgrade would exceed this trip's allowed step count for the loyalty tier.",
+    );
   }
 
   if (passenger.upgradesUsedThisTrip + 1 > maxSteps) {
-    return {
-      eligible: false,
-      newFareClass: null,
-      reason: "Upgrade would exceed this trip's allowed step count for the loyalty tier.",
-    };
+    return upgradeResult(
+      false,
+      null,
+      "Upgrade would exceed this trip's allowed step count for the loyalty tier.",
+    );
   }
 
   const targetFareClass = FARE_ORDER[currentIndex + 1];
   const seatsLeft = flight.seatsAvailable[targetFareClass];
-
   if (seatsLeft <= 0) {
-    return {
-      eligible: false,
-      newFareClass: null,
-      reason: "No seats available in target fare class.",
-    };
+    return upgradeResult(false, null, "No seats available in target fare class.");
   }
-
-  // Everything checks out - take the seat.
-  flight.seatsAvailable[targetFareClass] = seatsLeft - 1;
-  passenger.currentFareClass = targetFareClass;
-  passenger.upgradesUsedThisTrip += 1;
-
-  return {
-    eligible: true,
-    newFareClass: targetFareClass,
-    reason: "Upgrade applied.",
-  };
+  return upgradeResult(true, targetFareClass, "Upgrade applied");
 }
+
+const upgradeResult = (
+  eligible: boolean,
+  newFareClass: FareClass | null,
+  reason: string,
+): UpgradeResult => ({
+  eligible,
+  newFareClass,
+  reason,
+});
+
+
