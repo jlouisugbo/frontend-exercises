@@ -8,7 +8,7 @@ import { toLineItem, type PayrollEvent } from './starter';
 // below should keep working unchanged as long as toLineItem's observable
 // input/output shape stays the same.
 
-function hireEvent(overrides: Partial<PayrollEvent> = {}): PayrollEvent {
+function hireEvent(overrides: Partial<Extract<PayrollEvent, {type: "hire"}>> = {}): PayrollEvent {
   return {
     type: 'hire',
     employeeId: 'emp-1',
@@ -18,7 +18,7 @@ function hireEvent(overrides: Partial<PayrollEvent> = {}): PayrollEvent {
   };
 }
 
-function terminationEvent(overrides: Partial<PayrollEvent> = {}): PayrollEvent {
+function terminationEvent(overrides: Partial<Extract<PayrollEvent, {type: "termination"}>> = {}): PayrollEvent {
   return {
     type: 'termination',
     employeeId: 'emp-1',
@@ -28,7 +28,7 @@ function terminationEvent(overrides: Partial<PayrollEvent> = {}): PayrollEvent {
   };
 }
 
-function bonusEvent(overrides: Partial<PayrollEvent> = {}): PayrollEvent {
+function bonusEvent(overrides: Partial<Extract<PayrollEvent, {type: "bonus"}>> = {}): PayrollEvent {
   return {
     type: 'bonus',
     employeeId: 'emp-1',
@@ -39,7 +39,7 @@ function bonusEvent(overrides: Partial<PayrollEvent> = {}): PayrollEvent {
   };
 }
 
-function correctionEvent(overrides: Partial<PayrollEvent> = {}): PayrollEvent {
+function correctionEvent(overrides: Partial<Extract<PayrollEvent, {type: "correction"}>> = {}): PayrollEvent {
   return {
     type: 'correction',
     employeeId: 'emp-1',
