@@ -34,6 +34,7 @@ export function crossfade(fromTrack: Track | null, toTrack: Track): () => void {
     if (step >= FADE_STEPS) {
       clearInterval(intervalId);
     }
+
   }, FADE_INTERVAL_MS);
 
   return () => clearInterval(intervalId);
@@ -54,8 +55,9 @@ export function NowPlayingBar({ queue, initialIndex = 0 }: NowPlayingBarProps) {
       return;
     }
 
-    crossfade(previousTrackRef.current, track);
+    const cancel = crossfade(previousTrackRef.current, track);
     previousTrackRef.current = track;
+    return cancel
   }, [index, queue]);
 
   function handleSkip() {
