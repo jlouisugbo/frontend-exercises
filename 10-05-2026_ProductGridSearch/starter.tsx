@@ -2,7 +2,7 @@
 // added on top of the existing grid last sprint - just filtered the same
 // list client-side rather than wiring up a new endpoint.
 
-import { memo, useState } from 'react';
+import { memo, useState, useMemo } from 'react';
 
 export interface Product {
   id: string;
@@ -41,9 +41,9 @@ export interface ProductGridProps {
 export function ProductGrid({ products, onAddToCart, onCardRender }: ProductGridProps) {
   const [search, setSearch] = useState('');
 
-  const visible = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const visible = useMemo(() => {
+    return products.filter((product) => product.name.toLowerCase().includes(search.toLowerCase()))
+  }, [products, search])
 
   return (
     <div>
