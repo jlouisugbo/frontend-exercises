@@ -30,7 +30,7 @@ export interface EnrollmentResult {
   eligible: boolean;
   reason: string;
 }
-
+const auditedEnrollments: Array<(Section & Pick<Student, "id">)> = [];
 /**
  * Checks whether `student` can enroll in `section`, and - if so - enrolls
  * them.
@@ -38,6 +38,29 @@ export interface EnrollmentResult {
  * Wired directly to the "Enroll" button on the course registration page.
  */
 export function attemptEnrollment(section: Section, student: Student): EnrollmentResult {
+  const available = canEnroll(section, student)
+  if (!available.eligible){
+    return available
+  }
+
+  // Everything checks out - lock in the seat.
+  section.seatsAvailable -= 1;
+  student.schedule.push({
+    sectionId: section.id,
+    courseCode: section.courseCode,
+    timeSlot: section.timeSlot,
+  });
+  student.currentCreditHours += section.creditHours;
+
+
+  auditedEnrollments.push({...section, id: student.id})
+  return {
+    eligible: true,
+    reason: "Enrolled.",
+  };
+}
+
+export function canEnroll(section: Section, student: Student): EnrollmentResult {
   const missingPrerequisites = section.prerequisites.filter(
     (course) => !student.completedCourses.includes(course)
   );
@@ -74,17 +97,8 @@ export function attemptEnrollment(section: Section, student: Student): Enrollmen
     };
   }
 
-  // Everything checks out - lock in the seat.
-  section.seatsAvailable -= 1;
-  student.schedule.push({
-    sectionId: section.id,
-    courseCode: section.courseCode,
-    timeSlot: section.timeSlot,
-  });
-  student.currentCreditHours += section.creditHours;
-
   return {
     eligible: true,
-    reason: "Enrolled.",
-  };
+    reason: "Eligible to enroll."
+  }
 }
