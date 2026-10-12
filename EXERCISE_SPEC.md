@@ -26,6 +26,8 @@ Each category has its own pool of recurring patterns, smells, or bug mechanisms 
 
 When generating an exercise: within that day's category, pick the **least-recently-used** pattern from its pool (the one that's gone longest without appearing, or has never appeared) — cycle the whole pool before any pattern repeats. Record which one you picked in `progress.jsonl`'s `pattern` field. Like the `flaw` field, this is for Claude's own future reference — **never name the pattern in the README**; the person should discover "oh, this is a Strategy-pattern gap" (or whichever) on their own, and Claude names it during review.
 
+**Spaced-repetition exception**: before picking the least-recently-used pattern, roll a roughly 1-in-6 chance to instead deliberately resurface an older pattern in that category that has at least one `"completed"` entry (never one whose only history is `"needs_revision"`/`"struggled"` — that's the hold exception below, not this one). When resurfacing, pick the pattern in that category with the *oldest* `"completed"` entry (the one furthest from recent memory), vary the domain as usual, and start at a difficulty at or above the difficulty it was last completed at — the point is reinforcing something that might be fading, not repeating a fresh intro. This is independent of, and checked before, the least-recently-used default and the negative-review hold exception; if the category has no `"completed"` history yet, skip the roll and fall through to the normal pick.
+
 Pools (not exhaustive — add to a pool over time if a good new one comes to mind; this list should grow, never just get reused verbatim forever):
 
 **Code review** (GoF-flavored structural smells):
@@ -82,14 +84,15 @@ Pools (not exhaustive — add to a pool over time if a good new one comes to min
 ## Progression logic (read progress.jsonl first, every time)
 
 - **Category**: always advance one step in the round-robin rotation from the last generated entry (see "Category rotation" above — this never stalls, no exceptions).
-- **Pattern**: within that category, default to the least-recently-used pattern in its pool (see "Pattern rotation" above).
-  - Exception: find that category's most recent entry that was **actually reviewed** — i.e. its `status` is `"completed"`, `"needs_revision"`, or `"struggled"`, not `"assigned"`. (Skip back over any `"assigned"`/unreviewed entries in that category to find it — an unreviewed exercise is not a verdict, just a pending one.) If that entry's status is `"needs_revision"` or `"struggled"`, **and** no later entry in that category has landed `"completed"`, hold: reuse that same pattern and the same difficulty (don't advance the pattern pool or raise difficulty), but still vary the domain. Otherwise — the most recent reviewed entry was `"completed"`, or the category has never been reviewed yet, or the most recent entry for it is still `"assigned"` — pick the next pattern in the pool normally.
+- **Pattern**: within that category, default to the least-recently-used pattern in its pool (see "Pattern rotation" above), after first checking the spaced-repetition roll described there.
+  - Exception: find that category's most recent entry that was **actually reviewed** — i.e. its `status` is `"completed"`, `"needs_revision"`, or `"struggled"`, not `"assigned"`. (Skip back over any `"assigned"`/unreviewed entries in that category to find it — an unreviewed exercise is not a verdict, just a pending one.) If that entry's status is `"needs_revision"` or `"struggled"`, **and** no later entry in that category has landed `"completed"`, hold: reuse that same pattern and the same difficulty (don't advance the pattern pool or raise difficulty), but still vary the domain. Otherwise — the most recent reviewed entry was `"completed"`, or the category has never been reviewed yet, or the most recent entry for it is still `"assigned"` — pick the next pattern in the pool normally (subject to the spaced-repetition roll).
   - Being `"assigned"` (not yet attempted/reviewed) is never itself a reason to hold. Only an actual review that came back negative holds things in place.
 - **Difficulty** is 1–5, roughly:
   - **1–2**: the flaw is visible on a read-through; one dominant, obvious problem.
   - **3**: several related things need to change together; requires understanding *why*, not just spotting *what*.
   - **4–5**: real design tension — API boundaries, async correctness, or long-term extensibility are genuinely ambiguous until reasoned through.
   - Raise difficulty gradually across completed sessions on a given category+pattern pairing; don't jump straight to 4–5 the first time a pattern reappears.
+  - **Starting difficulty for a brand-new pattern** (one with no prior entries at all): don't reset to a blank baseline of 1 every time. Instead, look at that *category's* overall completed track record — scan every `"completed"` entry in the category across all its patterns. If most of them finished clean (no `"needs_revision"`/`"struggled"` detours logged against them) and the most recent couple of completions in the category were already sitting at difficulty 2–3 or higher, start the new pattern at 2 instead of 1 — the person has already shown they can handle this category's baseline level of ambiguity, even though the specific pattern is new to them. If the category is new, thin, or has recent struggle history, start new patterns at 1 as before. This only calibrates the *starting point* for a never-before-seen pattern; the per-pattern raise-gradually rule above still governs everything after that.
 - This runs unattended — there's no one to ask clarifying questions of. Don't propose an idea and wait for approval; just pick the category, pattern, domain, and difficulty per the rules above and write the files directly.
 
 ## What every exercise must be
@@ -99,13 +102,14 @@ Pools (not exhaustive — add to a pool over time if a good new one comes to min
 - One **primary** flaw tied to the session's category and chosen pattern — a code smell/design problem for code-review, architecture, or TypeScript-modeling exercises; a non-obvious bug for debugging exercises; a state-management or rendering-performance problem for React state/performance exercises — optionally 1–2 smaller independent flaws alongside it for realism (code-review/architecture/TS-modeling only), never so many they compete for attention.
 - Silent about its own pattern. The README describes what the code does and why it's painful. It never names the smell, the GoF pattern, or the bug category being taught. That's for the person to discover, and for Claude to name later during review.
 - Never shipped with a solution. The point is the attempt.
+- **At difficulty 4–5, prefer spreading the flaw across 2–3 small files** instead of one file (e.g. a custom hook plus the component that consumes it; a service/adapter module plus its caller; a context provider plus two consumers) — real system-design tension usually lives in how pieces fit together, not in one file read top to bottom. Still exactly one primary flaw/pattern — splitting it across files is about representing a realistic seam, not multiplying the number of things to find. At difficulty 1–3, a single file (per "File layout" below) is still the default; don't split just for variety.
 
 ## File layout
 
 Each exercise is a dated directory at the repo root: `MM-DD-YYYY_ExerciseName/` (PascalCase-ish exercise name), containing:
 
-- **the name of the file based on the exercise** (`.tsx` if the exercise involves real React components/JSX) — the flawed starter code.
-- **A test file** (`*.test.ts` / `*.test.tsx`, named for the exercise) using vitest (and React Testing Library + jsdom for component exercises) — see rules below.
+- **the name of the file based on the exercise** (`.tsx` if the exercise involves real React components/JSX) — the flawed starter code. At difficulty 4–5, this may be 2–3 files instead of one — see "What every exercise must be" above — in which case name each file for what it contains (e.g. `useSomething.ts` + `SomethingPanel.tsx`) rather than forcing everything into one filename.
+- **A test file** (`*.test.ts` / `*.test.tsx`, named for the exercise) using vitest (and React Testing Library + jsdom for component exercises) — see rules below. One test file covering all the starter files together is fine; it doesn't need to be split to match them.
 - **README.md** — see template below.
 - Minimal standalone config: `package.json`, `tsconfig.json`, `vitest.config.ts` (plus `vitest.setup.ts` if RTL/jsdom is needed). Model these on the most recent prior exercise's config files; otherwise use sensible minimal defaults.
 
@@ -161,6 +165,10 @@ npm test
 Don't look for a solution here - there isn't one checked in. Once your tests pass and you're happy with your change (or you're stuck and want a second opinion), bring your code to Claude and ask for a review of this exercise. Claude will read this README, your code, and `progress.jsonl`, then walk through: your approach → bugs/issues → an alternative approach → the underlying concept → one thing to remember. It'll also update `progress.jsonl` with what it saw.
 ```
 
+## Review sessions
+
+When reviewing a submitted attempt (any Claude session, on demand — not part of scheduled generation), after walking through the usual approach → bugs/issues → alternative → concept → one thing to remember, also check `progress.jsonl` for a backlog: count entries still `"status": "assigned"` whose `"date"` is 7 or more days old. If there are 3 or more, mention it once, briefly and non-blockingly, at the end of the review (e.g. "by the way, you've got N exercises sitting unreviewed for a week+ — no rush, just flagging it") — never refuse or delay the review itself over this, and never raise it if the count is under 3. This is a gentle heads-up, not a gate.
+
 ## progress.jsonl
 
 One JSON object per line, one line per exercise. Schema:
@@ -188,4 +196,4 @@ One JSON object per line, one line per exercise. Schema:
 - `schema_version` is `2` as of the pattern-rotation change (older entries in this file are `1` and lack `pattern` — that's fine, don't backfill history, just use `2` going forward).
 - When generating a new exercise: append a line with `status: "assigned"` and empty arrays for the review-only fields.
 - When reviewing a submitted attempt (manual/on-demand, in any Claude session — not part of scheduled generation): update that exercise's line in place to `"completed"` (or `"needs_revision"`/`"struggled"` if it genuinely didn't land) and fill in the fields from the review.
-- Always read the last several lines before picking the next category/pattern/difficulty — this file **is** the adaptive-difficulty state. Specifically: find the last entry to get the category rotation's current position, and scan back within each category for its most-recently-reviewed entry to resolve the pattern-hold exception above.
+- Always read the last several lines before picking the next category/pattern/difficulty — this file **is** the adaptive-difficulty state. Specifically: find the last entry to get the category rotation's current position, scan back within each category for its most-recently-reviewed entry to resolve the pattern-hold exception above, and scan each category's full `"completed"` history to resolve the spaced-repetition roll and the new-pattern difficulty calibration above.
